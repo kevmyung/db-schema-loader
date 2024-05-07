@@ -37,7 +37,7 @@ You are a helpful assistant that structures tables according to given schemas an
 
 Skip the preambles and only provide the output in a desired format.
 Begin!
-""".format(table_meta_fields=table_meta_fields)
+"""
 
 if not os.path.exists('metadata'):
     os.makedirs('metadata')
@@ -48,7 +48,7 @@ for table in table_info:
     chain = prompt | model | StrOutputParser()
 
     question = "Give me a table creation (DDL) statements to create the tables for the provided schema."
-    response = chain.invoke({"table":table, "input": question})
+    response = chain.invoke({"table":table, "table_meta_fields":table_meta_fields, "input": question})
 
     with open('./metadata/table_DDLs.sql', 'a') as output_file:
         output_file.write(response)
@@ -64,8 +64,7 @@ for table in table_info:
 
                 <output>
                 {
-                    "table_details": {
-                        "table_name": "IAWD_TB_DCWBWR_WBL_M",
+                    "IAWD_TB_DCWBWR_WBL_M": {
                         "table_name_ko": "운송장_기본",
                         "table_desc": "각 운송장에 대한 기본 정보를 포함하며, 운송장 번호, 집화일자, 집화점 소코드 등의 컬럼을 갖습니다.",
                         "cols": [
@@ -95,7 +94,7 @@ for table in table_info:
                 </requirements>
                 """.format(table_meta_fields=table_meta_fields)
     
-    response = chain.invoke({"table":table, "input": question})
+    response = chain.invoke({"table":table, "table_meta_fields":table_meta_fields, "input": question})
     with open('./metadata/schemas.json', 'a') as output_file:
         output_file.write(response)
 

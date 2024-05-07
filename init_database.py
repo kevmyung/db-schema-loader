@@ -32,8 +32,11 @@ def execute_query(connection, query):
             connection.commit()
             print("Query executed successfully")
         except Error as e:
-            print(f"The error '{e}' occurred")
-            print(query)
+            print(f"The error '{e}' occurred in {query}")
+            cursor.execute('SHOW WARNINGS;')
+            warnings = cursor.fetchall()
+            if warnings:
+                print(warnings)
     else:
         print("No connection to the database.")
 
@@ -64,7 +67,15 @@ def main():
     for command in sql_commands:
         if command.strip():
             execute_query(connection, command)
-    
+
+    with open('metadata/table_DMLs.sql', 'r') as file:
+        sql_file = file.read()
+        sql_commands = sql_file.split(';') 
+
+    for command in sql_commands:
+        if command.strip():
+            execute_query(connection, command)
+
     if connection and connection.is_connected():
         connection.close()
         print("MySQL connection is closed")
