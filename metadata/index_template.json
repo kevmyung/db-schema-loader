@@ -1,0 +1,27 @@
+{
+    "settings": {
+        "index": {
+            "knn": true
+        }
+    },
+    "mappings": {
+        "properties": {
+            "input": {
+                "type": "text",
+                "analyzer": "nori"
+            },
+            "query": {
+                "type": "keyword"
+            },
+            "input_v": {
+                "type": "knn_vector",
+                "dimension": 1024,
+                "method": {
+                    "name": "hnsw",
+                    "engine": "faiss",
+                    "space_type": "l2"
+                }
+            }
+        }
+    }
+}
