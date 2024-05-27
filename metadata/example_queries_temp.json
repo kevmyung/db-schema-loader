@@ -1,0 +1,10 @@
+{"input": "What are all the artists in the database?", "query": "SELECT * FROM Artist"}
+{"input": "What albums are by the artist AC/DC?", "query": "SELECT * FROM Album WHERE ArtistId = (SELECT ArtistId FROM Artist WHERE Name = 'AC/DC')"}
+{"input": "What tracks belong to the 'Rock' genre?", "query": "SELECT * FROM Track WHERE GenreId = (SELECT GenreId FROM Genre WHERE Name = 'Rock')"}
+{"input": "What is the total duration of all tracks in the database?", "query": "SELECT SUM(Milliseconds) FROM Track"}
+{"input": "What are the details of customers residing in Canada?", "query": "SELECT * FROM Customer WHERE Country = 'Canada'"}
+{"input": "How many tracks are on the album with ID 5?", "query": "SELECT COUNT(*) FROM Track WHERE AlbumId = 5"}
+{"input": "How many invoices are there in the system?", "query": "SELECT COUNT(*) FROM Invoice"}
+{"input": "What tracks have a duration longer than 5 minutes?", "query": "SELECT * FROM Track WHERE Milliseconds > 300000"}
+{"input": "What are the top 5 customers by total purchase amount?", "query": "SELECT CustomerId, SUM(Total) AS TotalPurchase FROM Invoice GROUP BY CustomerId ORDER BY TotalPurchase DESC LIMIT 5"}
+{"input": "How many employees are there in the company?", "query": "SELECT COUNT(*) FROM Employee"}

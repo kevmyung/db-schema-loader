@@ -16,7 +16,10 @@ SQL: {sql}
 
 INDEX_NAME = "example_queries"
 REGION_NAME = "us-east-1"
-FILE_PATH = "./metadata/example_queries.json"
+SCHEMA_FILE = "./metadata/default_schema.json"
+SQL_FILE = "./metadata/test.txt"
+FILE_PATH_1 = "./metadata/example_queries_temp.json"
+FILE_PATH_2 = "./metadata/example_queries.json"
 
 
 def init_model():
@@ -107,39 +110,37 @@ def search_with_question(os_client, emb_model):
 
     return response['hits']['hits']
 
-def main():
-    # initialize the model
-    chat_model, emb_model = init_model()
+def query_translation(table_info, queries, chain):
+    if os.path.exists(FILE_PATH_1):
+        os.remove(FILE_PATH_1)
 
-    # load the schema description
-    with open('./metadata/default_schema.json', 'r') as file:
-        table_info = json.load(file)
-
-    # load the example SQLs
-    with open('./metadata/test.txt', 'r') as file:
-        data = file.read()
-    queries = data.split(';')
-
-    # create LLM chain
-    prompt = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-    chain = prompt | chat_model | StrOutputParser()
-
-    if os.path.exists(FILE_PATH):
-        os.remove(FILE_PATH)
-
-    num = 0
-    with open(FILE_PATH, 'a') as output_file:
+    with open(FILE_PATH_1, 'a') as output_file:
         for query in queries:
             sql = query.strip()
             
             # Query translation
             input = chain.invoke({"table_info": table_info, "sql": sql})
 
-            # Action part
-            action = { "index": { "_index": INDEX_NAME, "_id": str(num) } }
+            # Write input and query to the file in JSON format
+            data = {"input": input, "query": sql}
+            output_file.write(json.dumps(data, ensure_ascii=False) + "\n")
+
+def input_embedding(emb_model):
+    num = 0
+    if os.path.exists(FILE_PATH_2):
+        os.remove(FILE_PATH_2)
+
+    with open(FILE_PATH_1, 'r') as input_file, open(FILE_PATH_2, 'a') as output_file:
+        for line in input_file:
+            data = json.loads(line)
+            input = data['input']
+            query = data['query']
             
             # Data part
-            body = { "input": input, "query": sql, "input_v": emb_model.embed_query(input) }
+            body = { "input": input, "query": query, "input_v": emb_model.embed_query(input) }
+
+            # Action part
+            action = { "index": { "_index": INDEX_NAME, "_id": str(num) } }
 
             # Write action and body to the file in correct bulk format
             output_file.write(json.dumps(action, ensure_ascii=False) + "\n")
@@ -147,10 +148,30 @@ def main():
 
             num += 1    
 
+def main():
+    # initialize the model
+    chat_model, emb_model = init_model()
+
+    # load the schema description
+    with open(SCHEMA_FILE, 'r') as file:
+        table_info = json.load(file)
+
+    # load the example SQLs
+    with open(SQL_FILE, 'r') as file:
+        data = file.read()
+    queries = data.split(';')
+
+    # create LLM chain
+    prompt = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
+    chain = prompt | chat_model | StrOutputParser()
+
+    query_translation(table_info, queries, chain)
+    input_embedding(emb_model)
+
     # initialize opensearch index (cluster should be pre-created)
     os_client = init_opensearch()
 
-    with open(FILE_PATH, 'r') as file:
+    with open(FILE_PATH_2, 'r') as file:
         bulk_data = file.read()
 
     response = os_client.bulk(body=bulk_data)
