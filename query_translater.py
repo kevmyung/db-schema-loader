@@ -1,16 +1,57 @@
 import json
 import os
+import time
 from langchain_aws import ChatBedrock
 from opensearchpy import OpenSearch, RequestsHttpConnection
 from langchain_community.embeddings import BedrockEmbeddings
 from langchain_core.prompts.chat import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-PROMPT_TEMPLATE = """ 
-<table_info>
-{table_info}
-</table_info>
 
+PROMPT_TEMPLATE1 = """ 
+You are an expert in extracting table names and column names from SQL queries. 
+From the provided SQL query, extract all table names and column names used for SELECT, WHERE, and JOIN clauses, excluding asterisks ("*"). 
+Ensure that the response is in a valid JSON format that can be used directly with json.load(). 
+Skip the preamble and only provide the answer in a JSON document.
+
+<example>
+SQL:
+SELECT * from LOGIS_ADMIN.IAWD_TB_DCBSCD_BASISLC_M 
+where basis_lclsf_cd_nm like '%예약구분%'
+LIMIT 200;
+
+{{
+  "table": ["IAWD_TB_DCBSCD_BASISLC_M"],
+  "column": ["basis_lclsf_cd_nm"]
+}}
+</example>
+
+{{
+  "table": ["table1", "table2", ...],
+  "column": ["col1", "col2", ...]
+}}
+
+SQL: {sql}
+"""
+
+
+PROMPT_TEMPLATE2 = """ 
+You are an SQL expert who can understand the intent behind a given SQL query. 
+Translate the SQL query into a natural language request that a real user might make. 
+Keep your translation concise and conversational, mimicking how an actual user would ask for the information sought by the query. 
+Do not reference the <description> section directly and do not use a question form. 
+Ensure to include all conditions specified in the SQL query in the request.
+Skip the preamble and phrase only the natural language request in Korean using a concise and straightforward tone without a verb ending. 
+
+<description>
+{description}
+</description>
+
+<example>
+SQL: SELECT count(*)\nfrom IAWB_TB_DCTRTR_TR_M\nwhere work_dt = '20240522'
+
+2024년 5월 22일에 처리된 상품 건수 조회
+</example>
 SQL: {sql}
 """
 
@@ -27,14 +68,7 @@ def init_model():
         "max_tokens": 100000,
         "temperature": 0.0,
         "top_k": 250,
-        "top_p": 1,
-        "system":"""
-        You are an SQL expert who can understand the intent behind a given SQL query. 
-        Translate the SQL query into a natural language request, phrased as a conversational question that a real user might ask. 
-        Use the provided table information between <table_info> and </table_info> to comprehend the schema defined in the SQL. 
-        Keep your translation concise and conversational, mimicking how an actual user would inquire about the information sought by the query.
-        Skip the preamble and only provide the generated user's inquery.
-        """
+        "top_p": 1
     }
 
     chat_model = ChatBedrock(
@@ -76,7 +110,7 @@ def init_opensearch():
             connection_class=RequestsHttpConnection
     )
 
-    # create_os_index(os_client)
+    create_os_index(os_client)
 
     return os_client
 
@@ -110,7 +144,23 @@ def search_with_question(os_client, emb_model):
 
     return response['hits']['hits']
 
-def query_translation(table_info, queries, chain):
+def extract_descriptions(table_info, tables, columns):
+    description = {
+        "table": {},
+        "column": {}
+    }
+    for table_schema in table_info:
+        for table_name, table_info in table_schema.items():
+            if table_name in tables:
+                description["table"][table_name] = table_info["table_desc"]
+                for col in table_info["cols"]:
+                    col_name = col["col"]
+                    if col_name in columns:
+                        description["column"][col_name] = col["col_desc"]
+    return description
+
+def query_translation(table_info, queries, chain1, chain2):
+
     if os.path.exists(FILE_PATH_1):
         os.remove(FILE_PATH_1)
 
@@ -118,9 +168,16 @@ def query_translation(table_info, queries, chain):
         for query in queries:
             sql = query.strip()
             
-            # Query translation
-            input = chain.invoke({"table_info": table_info, "sql": sql})
+            try:
+                response = chain1.invoke({"sql": sql})
+                schema = json.loads(response)
+            except json.JSONDecodeError:
+                print(response)
+                time.sleep(1)  
 
+            description = extract_descriptions(table_info, schema["table"], schema["column"])
+            
+            input = chain2.invoke({"sql": sql, "description": description})
             # Write input and query to the file in JSON format
             data = {"input": input, "query": sql}
             output_file.write(json.dumps(data, ensure_ascii=False) + "\n")
@@ -159,13 +216,16 @@ def main():
     # load the example SQLs
     with open(SQL_FILE, 'r') as file:
         data = file.read()
-    queries = data.split(';')
+    queries = [query.strip() for query in data.split(';') if query.strip()]
+
+    prompt1 = ChatPromptTemplate.from_template(PROMPT_TEMPLATE1)
+    chain1 = prompt1 | chat_model | StrOutputParser()
 
     # create LLM chain
-    prompt = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
-    chain = prompt | chat_model | StrOutputParser()
+    prompt2 = ChatPromptTemplate.from_template(PROMPT_TEMPLATE2)
+    chain2 = prompt2 | chat_model | StrOutputParser()
 
-    query_translation(table_info, queries, chain)
+    query_translation(table_info, queries, chain1, chain2)
     input_embedding(emb_model)
 
     # initialize opensearch index (cluster should be pre-created)
