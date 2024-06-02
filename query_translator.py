@@ -12,7 +12,12 @@ PROMPT_TEMPLATE1 = """
 You are an expert in extracting table names and column names from SQL queries. 
 From the provided SQL query, extract all table names and column names used for SELECT, WHERE, and JOIN clauses, excluding asterisks ("*"). 
 Ensure that the response is in a valid JSON format that can be used directly with json.load(). 
-Skip the preamble and only provide the answer in a JSON document.
+Skip the preamble and only provide the answer in a JSON document:
+
+{{
+  "table": ["table1", "table2", ...],
+  "column": ["col1", "col2", ...]
+}}
 
 <example>
 SQL:
@@ -25,11 +30,6 @@ LIMIT 200;
   "column": ["basis_lclsf_cd_nm"]
 }}
 </example>
-
-{{
-  "table": ["table1", "table2", ...],
-  "column": ["col1", "col2", ...]
-}}
 
 SQL: {sql}
 """
