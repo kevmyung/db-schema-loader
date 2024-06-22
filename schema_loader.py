@@ -65,19 +65,14 @@ for table in table_info:
                 <output>
                 {
                     "IAWD_TB_DCWBWR_WBL_M": {
-                        "table_name_ko": "운송장_기본",
                         "table_desc": "각 운송장에 대한 기본 정보를 포함하며, 운송장 번호, 집화일자, 집화점 소코드 등의 컬럼을 갖습니다.",
                         "cols": [
                             {
                                 "col": "WBL_NO",
-                                "col_ko": "운송장번호",
-                                "coltype": "VARCHAR(60)",
                                 "col_desc": "택배의 운송장 고유번호"
                             },
                             {
                                 "col": "COC_DT",
-                                "col_ko": "집화일자",
-                                "coltype": "VARCHAR(8)",
                                 "col_desc": "택배가 집화된 날짜"
                             }
                         ]
@@ -88,7 +83,7 @@ for table in table_info:
 
                 <requirements>
                 - It is crucial to adhere to the following JSON format for each table and column:
-                {"table_details": {"table_name": "", "table_name_ko":"", "table_desc":"", "cols":[{"col":"", "col_ko":"", "coltype":"", "col_desc":}]}}
+                {"table_details": {"table_name": "", "table_desc":"", "cols":[{"col":"", "col_desc":""}]}}
                 - Pay close attention to include all columns accurately and without any omissions or incorrect values.
                 - Finish a JSON output with a comma.
                 </requirements>

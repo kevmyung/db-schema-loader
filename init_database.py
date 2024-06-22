@@ -1,3 +1,4 @@
+import os
 import json
 import mysql.connector
 from mysql.connector import Error
@@ -68,13 +69,16 @@ def main():
         if command.strip():
             execute_query(connection, command)
 
-    with open('metadata/table_DMLs.sql', 'r') as file:
-        sql_file = file.read()
-        sql_commands = sql_file.split(';') 
+    if os.path.exists('metadata/table_DMLs.sql'):
+        with open('metadata/table_DMLs.sql', 'r') as file:
+            sql_file = file.read()
+            sql_commands = sql_file.split(';') 
 
-    for command in sql_commands:
-        if command.strip():
-            execute_query(connection, command)
+        for command in sql_commands:
+            if command.strip():
+                execute_query(connection, command)
+    else:
+        print("File 'metadata/table_DMLs.sql' does not exist.")
 
     if connection and connection.is_connected():
         connection.close()
