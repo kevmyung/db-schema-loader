@@ -2,7 +2,7 @@
 
 1. [Schema Loader](#schema-loader)
    - 간단한 테이블 설명 파일을 활용해 데이터베이스 스키마 정의 문서를 자동으로 생성합니다.
-2. [(Optional) init_database로 데이터베이스 초기 설정](#optional-데이터베이스-초기화)
+2. [Init Database](#optional-데이터베이스-초기화)
    - 데이터베이스 스키마 정의를 활용해, 테스트 용 MySQL 데이터베이스 스키마를 초기 구성하고, 샘플 데이터를 적재합니다.
 3. [Query Translator](#query-translator)
    - 예제 SQL 쿼리를 자연어로 번역하고, 이를 벡터 임베딩으로 변환하여 OpenSearch에 인덱싱합니다싱
@@ -94,7 +94,7 @@ table_meta_fields = "정보분석 테이블명,정보분석 테이블한글명_3
 
 ---
 
-# (Optional) init_database로 데이터베이스 초기 설정
+# Init Database
 
 테스트용 데이터베이스 환경을 구축하는 경우 이 스크립트를 활용합니다. 이 스크립트는 MySQL 데이터베이스를 대상으로 하는 경우에 맞춰 정의되어 있습니다.
 
