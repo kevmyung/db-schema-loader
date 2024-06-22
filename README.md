@@ -1,7 +1,14 @@
+# Overview
+
+1. [Schema Loader](#schema-loader)
+   - 간단한 테이블 설명 파일을 활용해 데이터베이스 스키마 정의 문서를 자동으로 생성합니다.
+2. [(Optional) init_database로 데이터베이스 초기 설정](#optional-데이터베이스-초기화)
+   - 데이터베이스 스키마 정의를 활용해, 테스트 용 MySQL 데이터베이스 스키마를 초기 구성하고, 샘플 데이터를 적재합니다.
+3. [Query Translator](#query-translator)
+   - 예제 SQL 쿼리를 자연어로 번역하고, 이를 벡터 임베딩으로 변환하여 OpenSearch에 인덱싱합니다싱
+
+
 # 1. Schema Loader
-
-## 소개
-
 `schema_loader.py` 스크립트는 사전에 정의된 JSON 파일(`table_info.json`)로부터 데이터베이스 스키마 정의를 생성합니다. 이 스크립트는 데이터베이스에 테이블을 생성하기 위한 SQL 데이터 정의 언어(DDL) 문장을 출력하며, 자세한 스키마 설명을 JSON 형식으로 출력합니다.
 
 ## 입력
