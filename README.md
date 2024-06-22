@@ -1,10 +1,10 @@
 # Overview
 
-1. [Schema Loader](#schema-loader)
+1. [Schema Loader](https://github.com/kevmyung/db-schema-loader/tree/main?tab=readme-ov-file#schema-loader)
    - 간단한 테이블 설명 파일을 활용해 데이터베이스 스키마 정의 문서를 자동으로 생성합니다.
-2. [Init Database](#optional-데이터베이스-초기화)
+2. [Init Database](https://github.com/kevmyung/db-schema-loader/tree/main?tab=readme-ov-file#init-database)
    - 데이터베이스 스키마 정의를 활용해, 테스트 용 MySQL 데이터베이스 스키마를 초기 구성하고, 샘플 데이터를 적재합니다.
-3. [Query Translator](#query-translator)
+3. [Query Translator](https://github.com/kevmyung/db-schema-loader/tree/main?tab=readme-ov-file#query-translator)
    - 예제 SQL 쿼리를 자연어로 번역하고, 이를 벡터 임베딩으로 변환하여 OpenSearch에 인덱싱합니다싱
 
 
