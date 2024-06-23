@@ -16,80 +16,56 @@
 ## 입력
 
 - `table_info.json`: 테이블 및 컬럼 정보를 포함하는 JSON 파일.
-    - `table_info.json`의 형식
-        `table_info.json`은 다음과 같은 구조로 작성되어야 합니다:
-        ```json
-        [
-            "Table1, Column1, Column1 Description, Column1 Type\nTable1, Column2, Column2 Description, Column2 Type, ...",
-            "Table2, Column1, Column1 Description, Column1 Type\nTable2, Column2, Column2 Description, Column2 Type, ..."
-        ]
-        ```
-
-리스트의 각 항목은 테이블 및 컬럼 정보를 쉼표로 구분한 문자열입니다. 각 테이블의 컬럼은 개행 문자(`\n`)로 구분됩니다.
-
-### 예시
-
-```json
-[
-    "LOGIS_ADMIN.IAWD_TB_DCWBWR_WBL_M,OIAWD_ODCWB_운송장_기본,WBL_NO,운송장번호,VARCHAR(60)\nLOGIS_ADMIN.IAWD_TB_DCWBWR_WBL_M,OIAWD_ODCWB_운송장_기본,COC_DT,집화일자,VARCHAR(8)"
-]
-```
+    ```json
+    [
+        "Table1, Column1, Column1 Description, Column1 Type\nTable1, Column2, Column2 Description, Column2 Type, ...",
+        "Table2, Column1, Column1 Description, Column1 Type\nTable2, Column2, Column2 Description, Column2 Type, ..."
+    ]
+    ```
+    - 리스트의 각 항목은 테이블 및 컬럼 정보를 쉼표로 구분한 문자열입니다. 각 테이블의 컬럼은 개행 문자(`\n`)로 구분됩니다.
+    ```json
+    [
+        "LOGIS_ADMIN.IAWD_TB_DCWBWR_WBL_M,OIAWD_ODCWB_운송장_기본,WBL_NO,운송장번호,VARCHAR(60)\nLOGIS_ADMIN.IAWD_TB_DCWBWR_WBL_M,OIAWD_ODCWB_운송장_기본,COC_DT,집화일자,VARCHAR(8)"
+    ]
+    ```
 
 ## 출력
 
-1. `./metadata/table_DDLs.sql`: `table_info.json`에 정의된 테이블을 생성하기 위한 SQL DDL 구문.
-2. `./metadata/schemas.json`: 자세한 스키마 설명을 포함하는 JSON 형식의 파일.
-
-### 출력 예시
-
-#### `table_DDLs.sql`
-
-```sql
-CREATE TABLE IAWD_TB_DCWBWR_WBL_M (WBL_NO VARCHAR(60),COC_DT VARCHAR(8));
-```
-
-#### `schemas.json`
-
-```json
-{
-    "IAWD_TB_DCWBWR_WBL_M": {
-        "table_desc": "각 운송장에 대한 기본 정보를 포함하며, 운송장 번호, 집화일자 등의 컬럼을 갖습니다.",
-        "cols": [
-            {
-                "col": "WBL_NO",
-                "col_desc": "택배의 운송장 고유번호"
-            },
-            {
-                "col": "COC_DT",
-                "col_desc": "택배가 집화된 날짜"
-            }
-        ]
+- `./metadata/table_DDLs.sql`: `table_info.json`에 정의된 테이블을 생성하기 위한 SQL DDL 구문.
+    ```sql
+    CREATE TABLE IAWD_TB_DCWBWR_WBL_M (WBL_NO VARCHAR(60),COC_DT VARCHAR(8));
+    ```
+- `./metadata/schemas.json`: 자세한 스키마 설명을 포함하는 JSON 형식의 파일.
+    ```json
+    {
+        "IAWD_TB_DCWBWR_WBL_M": {
+            "table_desc": "각 운송장에 대한 기본 정보를 포함하며, 운송장 번호, 집화일자 등의 컬럼을 갖습니다.",
+            "cols": [
+                {
+                    "col": "WBL_NO",
+                    "col_desc": "택배의 운송장 고유번호"
+                },
+                {
+                    "col": "COC_DT",
+                    "col_desc": "택배가 집화된 날짜"
+                }
+            ]
+        }
     }
-}
-```
+    ```
 
 ## 사용법
 
-### 스크립트 실행
-
 1. `table_info.json` 파일이 올바른 형식으로 작성되어 적절한 디렉토리에 위치하고 있는지 확인합니다.
-2. `schema_loader.py` 스크립트를 실행합니다:
-
-```sh
-python schema_loader.py
-```
-
-### `table_meta_fields` 수정
-
-사용자의 메타데이터 구조에 맞춰 `table_meta_fields`를 스크립트에서 수정할 수 있습니다.
-
-#### 예시
-
-메타데이터 필드 형식이 `"정보분석 테이블명,정보분석 테이블한글명_3차,정보분석 컬럼명,정보분석 컬럼한글명,정보분석 컬럼타입"`인 경우, `schema_loader.py`의 `table_meta_fields`를 다음과 같이 업데이트합니다.
-
-```python
-table_meta_fields = "정보분석 테이블명,정보분석 테이블한글명_3차,정보분석 컬럼명,정보분석 컬럼한글명,정보분석 컬럼타입"
-```
+2. 활용하는 메타데이터 구조에 맞춰 `table_meta_fields`를 스크립트에서 수정할 수 있습니다.
+    - 메타데이터 필드 형식이 `"정보분석 테이블명,정보분석 테이블한글명_3차,정보분석 컬럼명,정보분석 컬럼한글명,정보분석 컬럼타입"`인 경우, `schema_loader.py`의 `table_meta_fields`를 다음과 같이 업데이트합니다.
+        ```python
+        table_meta_fields = "정보분석 테이블명,정보분석 테이블한글명_3차,정보분석 컬럼명,정보분석 컬럼한글명,정보분석 컬럼타입"
+        ```
+3. `schema_loader.py` 스크립트를 실행합니다:
+    ```sh
+    python schema_loader.py
+    ```
 
 ---
 
