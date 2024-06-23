@@ -221,3 +221,68 @@ SELECT SUM(Milliseconds) FROM Track;
 ```sh
 python query_translator.py
 ```
+
+# Table Summarizer
+
+`table_summarizer.py` 스크립트는 LLM을 활용하여 데이터베이스 테이블 정보와 샘플 쿼리로부터 테이블 요약을 생성합니다. 이 요약은 한국어로 작성되며, 테이블의 데이터 유형과 잠재적 활용 사례를 포함합니다.
+
+## 입력
+
+- `default_schema.json`: 테이블 정보를 포함하는 JSON 파일
+- `example_queries_temp.json`: 샘플 쿼리를 포함하는 JSON 파일
+
+### `default_schema.json`의 형식
+```json
+[
+    {
+        "Album": {
+            "table_desc": "Stores album data with unique ID, title, and links to artist via artist ID.",
+            "cols": [
+                {
+                    "col": "AlbumId",
+                    "col_desc": "Primary key, unique identifier for the album."
+                },
+                {
+                    "col": "Title",
+                    "col_desc": "Title of the album."
+                },
+                {
+                    "col": "ArtistId",
+                    "col_desc": "Foreign key that references the artist of the album."
+                }
+            ]
+        }
+    },
+    ...
+]
+```
+
+### `example_queries_temp.json`의 형식
+```json
+{"input": "모든 아티스트 정보 조회", "query": "SELECT * FROM Artist"}
+{"input": "AC/DC 아티스트의 앨범 정보 조회", "query": "SELECT * FROM Album WHERE ArtistId = (SELECT ArtistId FROM Artist WHERE Name = 'AC/DC')"}
+{"input": "락 장르의 모든 트랙 정보 조회", "query": "SELECT * FROM Track WHERE GenreId = (SELECT GenreId FROM Genre WHERE Name = 'Rock')"}
+```
+
+## 출력
+
+- `detailed_schema_temp.json`: 임시 파일로 생성된 테이블 요약을 저장
+- `detailed_schema.json`: 최종 파일로 임베딩된 테이블 요약을 저장
+
+### `detailed_schema_temp.json`의 형식
+```json
+{"Album": {"table_desc": "...", "cols": [{"col": "AlbumId", ...}], "table_summary": "이 테이블은 앨범 데이터를 저장하고 있습니다. 각 앨범은 고유한 ID, 제목, 그리고 아티스트 ID로 연결되어 있습니다. 아티스트 ID는 아티스트 테이블의 외래 키 역할을 합니다.\n\n이 테이블을 활용하면 다음과 같은 분석이 가능합니다:\n\n1. 특정 아티스트의 전체 앨범 목록 조회\n2. 아티스트별 앨범 수 집계\n3. 앨범별 트랙 수 통계 분석\n4. 아티스트의 활동 기간 및 작품 활동량 분석\n5. 인기 아티스트/앨범 파악을 통한 추천 시스템 구축\n6. 아티스트/앨범 관련 콘텐츠 및 상품 기획 시 참고 자료로 활용\n\n이 테이블을 통해 음악 스트리밍 서비스나 온라인 음원 판매 플랫폼에서 아티스트 프로필 페이지를 구성하거나, 아티스트 관련 콘텐츠를 제작할 때 필요한 정보를 얻을 수 있습니다. 또한 개인 맞춤 추천 시스템이나 마케팅 전략 수립 시에도 유용한 데이터가 될 것입니다."}}
+...
+```
+
+### `detailed_schema.json`의 형식
+`detailed_schema_temp.json`에서 `table_summary`의 임베딩을 저장하기 위한 필드인 `table_summary_v`를 추가
+
+## 실행 방법
+
+1. 필요한 입력 파일이 올바른 형식으로 작성되어 적절한 디렉토리에 위치하고 있는지 확인합니다.
+2. `table_summarizer.py` 스크립트를 실행합니다:
+
+```sh
+python table_summarizer.py
+```
