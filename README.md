@@ -1,5 +1,7 @@
 # Overview
 
+![Intro](./images/intro.png)
+
 1. [Schema Loader](https://github.com/kevmyung/db-schema-loader/tree/main?tab=readme-ov-file#schema-loader)
    - 간단한 테이블 설명 파일을 활용해 데이터베이스 스키마 정의 문서를 자동으로 생성합니다.
 2. [Init Database](https://github.com/kevmyung/db-schema-loader/tree/main?tab=readme-ov-file#init-database)
