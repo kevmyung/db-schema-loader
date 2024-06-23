@@ -1,1 +1,5 @@
 mysql-connector-python
+langchain-aws
+opensearch-py
+langchain
+langchain_community

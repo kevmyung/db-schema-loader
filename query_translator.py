@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import yaml
 from langchain_aws import ChatBedrock
 from opensearchpy import OpenSearch, RequestsHttpConnection
 from langchain_community.embeddings import BedrockEmbeddings
@@ -41,6 +42,9 @@ Translate the SQL query into a natural language request that a real user might m
 Keep your translation concise and conversational, mimicking how an actual user would ask for the information sought by the query. 
 Do not reference the <description> section directly and do not use a question form. 
 Ensure to include all conditions specified in the SQL query in the request.
+Write possible business and functional purposes of the query.
+Write very detailed purposes and motives of the query in detail.
+
 Skip the preamble and phrase only the natural language request in Korean using a concise and straightforward tone without a verb ending. 
 
 <description>
@@ -57,6 +61,7 @@ SQL: {sql}
 
 INDEX_NAME = "example_queries"
 REGION_NAME = "us-east-1"
+
 SCHEMA_FILE = "./metadata/default_schema.json"
 SQL_FILE = "./metadata/test.txt"
 FILE_PATH_1 = "./metadata/example_queries_temp.json"
@@ -80,11 +85,11 @@ def init_model():
     emb_model = BedrockEmbeddings(model_id="amazon.titan-embed-text-v2:0", region_name=REGION_NAME, model_kwargs={"dimensions":1024}) 
     return chat_model, emb_model
 
+def load_opensearch_config():
+    with open("./metadata/opensearch.yml", 'r', encoding='utf-8') as file:
+        return yaml.safe_load(file)
 
-def create_os_index(os_client):
-    with open('./metadata/index_template.json', 'r') as f:
-        index_body = json.load(f)
-
+def create_os_index(os_client, mapping):
     exists = os_client.indices.exists(INDEX_NAME)
 
     if exists:
@@ -93,13 +98,12 @@ def create_os_index(os_client):
     else:
         print("Index does not exist, Create one.")
 
-    os_client.indices.create(INDEX_NAME, body=index_body)
+    os_client.indices.create(INDEX_NAME, body=mapping)
 
-def init_opensearch():
-    user = ""
-    password = ""
-    endpoint = ""
-    http_auth = (user, password)
+def init_opensearch(config):
+    mapping = {"settings": config['settings'], "mappings": config['mappings-schema']}
+    endpoint = config['opensearch-auth']['domain_endpoint']
+    http_auth = (config['opensearch-auth']['user_id'], config['opensearch-auth']['user_password'])
 
     os_client = OpenSearch(
             hosts=[{'host': endpoint.replace("https://", ""),'port': 443}],
@@ -110,7 +114,7 @@ def init_opensearch():
             connection_class=RequestsHttpConnection
     )
 
-    create_os_index(os_client)
+    create_os_index(os_client, mapping)
 
     return os_client
 
@@ -209,27 +213,28 @@ def main():
     # initialize the model
     chat_model, emb_model = init_model()
 
-    # load the schema description
-    with open(SCHEMA_FILE, 'r') as file:
-        table_info = json.load(file)
+    # # load the schema description
+    # with open(SCHEMA_FILE, 'r') as file:
+    #     table_info = json.load(file)
 
-    # load the example SQLs
-    with open(SQL_FILE, 'r') as file:
-        data = file.read()
-    queries = [query.strip() for query in data.split(';') if query.strip()]
+    # # load the example SQLs
+    # with open(SQL_FILE, 'r') as file:
+    #     data = file.read()
+    # queries = [query.strip() for query in data.split(';') if query.strip()]
 
-    prompt1 = ChatPromptTemplate.from_template(PROMPT_TEMPLATE1)
-    chain1 = prompt1 | chat_model | StrOutputParser()
+    # prompt1 = ChatPromptTemplate.from_template(PROMPT_TEMPLATE1)
+    # chain1 = prompt1 | chat_model | StrOutputParser()
 
-    # create LLM chain
-    prompt2 = ChatPromptTemplate.from_template(PROMPT_TEMPLATE2)
-    chain2 = prompt2 | chat_model | StrOutputParser()
+    # # create LLM chain
+    # prompt2 = ChatPromptTemplate.from_template(PROMPT_TEMPLATE2)
+    # chain2 = prompt2 | chat_model | StrOutputParser()
 
-    query_translation(table_info, queries, chain1, chain2)
-    input_embedding(emb_model)
+    # query_translation(table_info, queries, chain1, chain2)
+    # input_embedding(emb_model)
 
     # initialize opensearch index (cluster should be pre-created)
-    os_client = init_opensearch()
+    config = load_opensearch_config()
+    os_client = init_opensearch(config)
 
     with open(FILE_PATH_2, 'r') as file:
         bulk_data = file.read()
