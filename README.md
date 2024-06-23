@@ -8,7 +8,7 @@
    - 예제 SQL 쿼리를 자연어로 번역하고, 이를 벡터 임베딩으로 변환하여 OpenSearch에 인덱싱합니다.
 4. [Table Summarizer](https://github.com/kevmyung/db-schema-loader/tree/main?tab=readme-ov-file#table-summarizer)
    - 샘플 쿼리 및 테이블 기본 설명을 활용해서 각 테이블의 활용 방법에 대한 요약 설명을 증강하고, 이를 벡터 임베딩으로 변환하여 OpenSearch에 인덱싱합니다.
-   
+
 
 # Schema Loader
 `schema_loader.py` 스크립트는 사전에 정의된 JSON 파일(`table_info.json`)로부터 데이터베이스 스키마 정의를 생성합니다. 이 스크립트는 데이터베이스에 테이블을 생성하기 위한 SQL 데이터 정의 언어(DDL) 문장을 출력하며, 자세한 스키마 설명을 JSON 형식으로 출력합니다.
@@ -16,17 +16,14 @@
 ## 입력
 
 - `table_info.json`: 테이블 및 컬럼 정보를 포함하는 JSON 파일.
-
-### `table_info.json`의 예시 형식
-
-`table_info.json`은 다음과 같은 구조로 작성되어야 합니다:
-
-```json
-[
-    "Table1, Column1, Column1 Description, Column1 Type\nTable1, Column2, Column2 Description, Column2 Type, ...",
-    "Table2, Column1, Column1 Description, Column1 Type\nTable2, Column2, Column2 Description, Column2 Type, ..."
-]
-```
+    - `table_info.json`의 형식
+        `table_info.json`은 다음과 같은 구조로 작성되어야 합니다:
+        ```json
+        [
+            "Table1, Column1, Column1 Description, Column1 Type\nTable1, Column2, Column2 Description, Column2 Type, ...",
+            "Table2, Column1, Column1 Description, Column1 Type\nTable2, Column2, Column2 Description, Column2 Type, ..."
+        ]
+        ```
 
 리스트의 각 항목은 테이블 및 컬럼 정보를 쉼표로 구분한 문자열입니다. 각 테이블의 컬럼은 개행 문자(`\n`)로 구분됩니다.
 
