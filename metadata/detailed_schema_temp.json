@@ -1,11 +1,346 @@
-{"Album": {"table_desc": "Stores album data with unique ID, title, and links to artist via artist ID.", "cols": [{"col": "AlbumId", "col_desc": "Primary key, unique identifier for the album."}, {"col": "Title", "col_desc": "Title of the album."}, {"col": "ArtistId", "col_desc": "Foreign key that references the artist of the album."}], "table_summary": "이 테이블은 앨범 데이터를 저장하고 있습니다. 각 앨범은 고유한 ID, 제목, 그리고 아티스트 ID로 연결되어 있습니다. 아티스트 ID는 아티스트 테이블의 외래 키 역할을 합니다.\n\n이 테이블을 활용하면 다음과 같은 분석이 가능합니다:\n\n1. 특정 아티스트의 전체 앨범 목록 조회\n2. 아티스트별 앨범 수 집계\n3. 앨범별 트랙 수 통계 분석\n4. 아티스트의 활동 기간 및 작품 활동량 분석\n5. 인기 아티스트/앨범 파악을 통한 추천 시스템 구축\n6. 아티스트/앨범 관련 콘텐츠 및 상품 기획 시 참고 자료로 활용\n\n이 테이블을 통해 음악 스트리밍 서비스나 온라인 음원 판매 플랫폼에서 아티스트 프로필 페이지를 구성하거나, 아티스트 관련 콘텐츠를 제작할 때 필요한 정보를 얻을 수 있습니다. 또한 개인 맞춤 추천 시스템이나 마케팅 전략 수립 시에도 유용한 데이터가 될 것입니다."}}
-{"Artist": {"table_desc": "Holds artist information with an ID and name.", "cols": [{"col": "ArtistId", "col_desc": "Primary key, unique identifier for the artist."}, {"col": "Name", "col_desc": "Name of the artist."}], "table_summary": "이 테이블은 아티스트 정보를 저장하고 있습니다. 각 아티스트에 대해 고유한 ID와 이름이 포함되어 있습니다. \n\n이 테이블을 활용하여 다음과 같은 작업을 수행할 수 있습니다:\n\n1. 특정 아티스트의 정보를 조회하고 관리할 수 있습니다.\n2. 아티스트 이름으로 해당 아티스트의 ID를 찾을 수 있습니다. \n3. 아티스트 ID를 다른 테이블의 외래키로 사용하여 아티스트와 관련된 다른 정보(예: 앨범, 곡 등)를 연결할 수 있습니다.\n4. 아티스트 목록을 분석하여 인기 아티스트, 신규 아티스트 등을 파악할 수 있습니다.\n5. 아티스트 이름 검색 기능을 구현할 수 있습니다.\n6. 아티스트 관련 콘텐츠나 상품을 기획할 때 기초 데이터로 활용할 수 있습니다.\n\n이 테이블은 음악 스트리밍 서비스, 온라인 음원 판매 플랫폼, 아티스트 관련 콘텐츠 제작 등 다양한 분야에서 활용될 수 있습니다."}}
-{"Customer": {"table_desc": "Contains customer details and links to their support representative.", "cols": [{"col": "CustomerId", "col_desc": "Primary key, unique customer identifier."}, {"col": "FirstName", "col_desc": "First name of the customer."}, {"col": "LastName", "col_desc": "Last name of the customer."}, {"col": "Company", "col_desc": "Company of the customer."}, {"col": "Address", "col_desc": "Address of the customer."}, {"col": "City", "col_desc": "City of the customer."}, {"col": "State", "col_desc": "State of the customer."}, {"col": "Country", "col_desc": "Country of the customer."}, {"col": "PostalCode", "col_desc": "Postal code of the customer."}, {"col": "Phone", "col_desc": "Phone number of the customer."}, {"col": "Fax", "col_desc": "Fax number of the customer."}, {"col": "Email", "col_desc": "Email address of the customer."}, {"col": "SupportRepId", "col_desc": "Foreign key that references the employee who supports this customer."}], "table_summary": "이 테이블은 고객 정보와 고객 지원 담당자 링크를 포함하고 있습니다. 고객 ID, 이름, 회사명, 주소, 도시, 주/도, 국가, 우편번호, 전화번호, 팩스번호, 이메일 주소 등 고객 개인 및 연락처 정보가 포함되어 있습니다. 또한 고객 지원 담당 직원의 ID도 외래키로 연결되어 있습니다.\n\n이 테이블을 활용하여 다음과 같은 분석이 가능합니다:\n\n- 국가/지역별 고객 데이터 필터링 및 세분화된 마케팅/프로모션 활동\n- 고객 구매 내역 분석을 통한 우수 고객 관리 및 타겟 마케팅 전략 수립  \n- 고객 위치 기반 지역 규정 준수 여부 확인\n- 고객 연락처 정보를 활용한 개인화된 커뮤니케이션 및 고객 서비스 제공\n- 고객 지원 담당자 배정 현황 파악 및 업무 분담 최적화\n\n이 테이블은 고객 관계 관리(CRM), 마케팅, 영업, 고객 서비스 등 다양한 비즈니스 부문에서 활용될 수 있는 핵심 데이터를 제공합니다."}}
-{"Employee": {"table_desc": "Stores employee details, including their supervisory chain.", "cols": [{"col": "EmployeeId", "col_desc": "Primary key, unique identifier for the employee."}, {"col": "LastName", "col_desc": "Last name of the employee."}, {"col": "FirstName", "col_desc": "First name of the employee."}, {"col": "Title", "col_desc": "Job title of the employee."}, {"col": "ReportsTo", "col_desc": "Foreign key that references the supervisor of the employee."}, {"col": "BirthDate", "col_desc": "Birth date of the employee."}, {"col": "HireDate", "col_desc": "Hire date of the employee."}, {"col": "Address", "col_desc": "Address of the employee."}, {"col": "City", "col_desc": "City of the employee."}, {"col": "State", "col_desc": "State of the employee."}, {"col": "Country", "col_desc": "Country of the employee."}, {"col": "PostalCode", "col_desc": "Postal code of the employee."}, {"col": "Phone", "col_desc": "Phone number of the employee."}, {"col": "Fax", "col_desc": "Fax number of the employee."}, {"col": "Email", "col_desc": "Email address of the employee."}], "table_summary": "이 테이블은 직원 정보를 저장하고 있습니다. 직원의 고유 식별자, 이름, 직함, 상사, 생년월일, 입사일, 주소, 전화번호, 팩스번호, 이메일 등의 데이터를 포함하고 있습니다. \n\n이 테이블을 활용하여 다음과 같은 분석이 가능합니다:\n\n- 직원 인력 현황 파악 및 모니터링\n- 부서/직급별 인력 분포 분석\n- 신입/경력 직원 비율 분석 \n- 근속년수 분석\n- 지역/국가별 인력 분포 분석\n- 직원 연령대 분석\n- 직원 이직률 분석\n- 직원 연락처 관리\n- 상사-부하 직원 관계 분석\n- 인사 정책 수립 및 의사결정을 위한 기초 데이터 활용\n\n이 테이블에는 직원의 개인 정보와 조직 내 위치, 연락처 등 다양한 정보가 포함되어 있어 인사 관리, 조직 분석, 의사결정 지원 등 다방면에서 활용될 수 있습니다."}}
-{"Genre": {"table_desc": "Catalogs music genres with a unique identifier and name.", "cols": [{"col": "GenreId", "col_desc": "Primary key, unique identifier for the genre."}, {"col": "Name", "col_desc": "Name of the genre."}], "table_summary": "이 테이블은 음악 장르에 대한 정보를 제공합니다. 각 장르는 고유한 식별자(GenreId)와 이름(Name)으로 구분됩니다. \n\n이 테이블을 활용하면 다음과 같은 분석이 가능합니다:\n\n- 특정 장르에 속하는 트랙 목록 조회\n- 장르별 트랙 수 집계\n- 신규 장르 추가 및 기존 장르 정보 수정\n- 다른 테이블(예: 트랙 정보 테이블)과 조인하여 장르별 트랙 정보 분석\n\n예를 들어 특정 장르의 인기도를 파악하거나, 사용자 취향에 맞는 장르의 트랙을 추천하는 데 활용할 수 있습니다. 또한 음원 서비스에서 장르별 트랙 분류 기능을 구현하는 데에도 도움이 될 것입니다."}}
-{"Invoice": {"table_desc": "Records details of transactions, linked to customers.", "cols": [{"col": "InvoiceId", "col_desc": "Primary key, unique identifier for the invoice."}, {"col": "CustomerId", "col_desc": "Foreign key that references the customer associated with this invoice."}, {"col": "InvoiceDate", "col_desc": "Date when the invoice was issued."}, {"col": "BillingAddress", "col_desc": "Billing address on the invoice."}, {"col": "BillingCity", "col_desc": "Billing city on the invoice."}, {"col": "BillingState", "col_desc": "Billing state on the invoice."}, {"col": "BillingCountry", "col_desc": "Billing country on the invoice."}, {"col": "BillingPostalCode", "col_desc": "Billing postal code on the invoice."}, {"col": "Total", "col_desc": "Total amount of the invoice."}], "table_summary": "이 테이블은 송장 정보와 고객 정보를 연결하여 저장하고 있습니다. 주요 컬럼은 다음과 같습니다:\n\n- InvoiceId: 송장의 고유 식별자\n- CustomerId: 송장과 연결된 고객의 고유 식별자 \n- InvoiceDate: 송장이 발행된 날짜\n- BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode: 고객의 청구지 주소 정보\n- Total: 송장의 총 금액\n\n이 테이블을 활용하여 다음과 같은 분석이 가능합니다:\n\n- 기간별, 고객별 매출 추이 분석\n- 우수 고객 식별 및 고객 세분화\n- 지역별 매출 현황 파악\n- 고객 구매 패턴 및 행동 분석\n- 마케팅 및 프로모션 전략 수립\n- 재고 관리 및 수요 예측\n- 고객 유지율 및 이탈률 분석\n- 리스크 관리 및 부정 행위 탐지\n\n예를 들어 고객별 총 구매액을 기준으로 상위 고객을 식별하고 이들의 구매 패턴을 파악하여 맞춤형 마케팅 전략을 수립할 수 있습니다. 또한 지역별 매출 현황을 모니터링하여 신규 매장 입지 선정 등의 의사결정에 활용할 수 있습니다."}}
-{"InvoiceLine": {"table_desc": "Details each line item on an invoice, linked to tracks and invoices.", "cols": [{"col": "InvoiceLineId", "col_desc": "Primary key, unique identifier for the invoice line."}, {"col": "InvoiceId", "col_desc": "Foreign key that references the associated invoice."}, {"col": "TrackId", "col_desc": "Foreign key that references the track sold in this invoice line."}, {"col": "UnitPrice", "col_desc": "Price per unit of the track."}, {"col": "Quantity", "col_desc": "Quantity of the track sold in this invoice line."}], "table_summary": "이 테이블은 송장의 각 라인 항목에 대한 세부 정보를 포함하고 있으며, 트랙과 송장에 연결되어 있습니다. \n\n주요 열은 다음과 같습니다:\n\n- InvoiceLineId: 송장 라인의 고유 식별자인 기본 키입니다.\n- InvoiceId: 관련 송장을 참조하는 외래 키입니다. \n- TrackId: 이 송장 라인에서 판매된 트랙을 참조하는 외래 키입니다.\n- UnitPrice: 트랙의 단위 가격입니다.\n- Quantity: 이 송장 라인에서 판매된 트랙의 수량입니다.\n\n이 테이블을 통해 다음과 같은 분석이 가능할 것으로 보입니다:\n\n- 특정 송장에 대한 세부 라인 항목 확인\n- 특정 트랙의 판매 내역 분석\n- 송장별 총 판매액 계산\n- 가장 인기 있는 트랙 파악\n- 시간에 따른 트랙 판매 추이 분석\n\n또한 이 테이블은 고객 구매 내역 추적, 재고 관리, 매출 보고 등에 활용될 수 있습니다."}}
-{"MediaType": {"table_desc": "Defines types of media for tracks.", "cols": [{"col": "MediaTypeId", "col_desc": "Primary key, unique identifier for the media type."}, {"col": "Name", "col_desc": "Name of the media type."}], "table_summary": "이 테이블은 트랙의 미디어 유형을 정의합니다. 다음과 같은 열을 포함합니다:\n\n- MediaTypeId: 미디어 유형의 고유 식별자로 기본 키입니다.\n- Name: 미디어 유형의 이름입니다.\n\n이 테이블은 다양한 미디어 유형(예: 오디오, 비디오 등)과 각 유형의 고유 식별자를 저장합니다. \n\n이 테이블을 활용하여 다음과 같은 작업을 수행할 수 있습니다:\n\n- 특정 미디어 유형의 ID를 조회하거나 미디어 유형 이름으로 ID를 찾을 수 있습니다.\n- 새로운 미디어 유형을 추가하거나 기존 유형을 수정/삭제할 수 있습니다.\n- 다른 테이블(예: 트랙 정보 테이블)과 조인하여 각 트랙의 미디어 유형을 식별할 수 있습니다.\n- 미디어 유형별로 트랙을 그룹화하고 분석할 수 있습니다."}}
-{"Playlist": {"table_desc": "Organizes tracks into playlists.", "cols": [{"col": "PlaylistId", "col_desc": "Primary key, unique identifier for the playlist."}, {"col": "Name", "col_desc": "Name of the playlist."}], "table_summary": "이 테이블은 트랙을 재생 목록으로 구성하는 데 사용됩니다. 테이블에는 다음과 같은 열이 포함되어 있습니다.\n\nPlaylistId: 재생 목록의 고유 식별자로 기본 키 역할을 합니다.\nName: 재생 목록의 이름을 저장합니다.\n\n이 테이블을 사용하면 다음과 같은 작업을 수행할 수 있습니다.\n\n- 새로운 재생 목록 생성 및 이름 지정\n- 기존 재생 목록 이름 변경\n- 재생 목록 식별을 위한 고유 ID 제공\n- 사용자 또는 앱에 재생 목록 목록 제공\n- 특정 재생 목록에 포함된 트랙 조회 (다른 테이블과 조인 필요)\n- 사용자 또는 앱별 재생 목록 그룹화 (다른 테이블과 조인 필요)\n\n이 테이블은 음악 스트리밍 서비스, 미디어 플레이어 앱, 개인 음악 라이브러리 관리 도구 등에서 활용될 수 있습니다."}}
-{"PlaylistTrack": {"table_desc": "Links tracks to playlists.", "cols": [{"col": "PlaylistId", "col_desc": "Foreign key that identifies the playlist."}, {"col": "TrackId", "col_desc": "Foreign key that identifies the track on the playlist."}], "table_summary": "이 테이블은 플레이리스트와 트랙 간의 연결 관계를 나타냅니다. 각 행은 특정 플레이리스트에 포함된 트랙을 식별합니다.\n\nPlaylistId 열은 플레이리스트를 고유하게 식별하는 외래 키입니다. TrackId 열은 해당 플레이리스트에 포함된 트랙을 고유하게 식별하는 외래 키입니다.\n\n이 테이블을 활용하면 다음과 같은 분석이 가능합니다:\n\n- 특정 플레이리스트에 포함된 모든 트랙 목록 확인\n- 가장 인기 있는 플레이리스트에 포함된 트랙 분석\n- 특정 트랙이 포함된 모든 플레이리스트 확인\n- 플레이리스트 간 공통 트랙 분석\n- 사용자 취향에 맞는 새로운 플레이리스트 추천\n\n이 테이블은 음악 스트리밍 서비스나 디지털 음원 판매 플랫폼에서 플레이리스트와 트랙 정보를 관리하는 데 유용할 것입니다."}}
-{"Track": {"table_desc": "Stores detailed information about music tracks, linked to albums, genres, and media types.", "cols": [{"col": "TrackId", "col_desc": "Primary key, unique identifier for the track."}, {"col": "Name", "col_desc": "Name of the track."}, {"col": "AlbumId", "col_desc": "Foreign key that references the album containing this track."}, {"col": "MediaTypeId", "col_desc": "Foreign key that references the type of media for this track."}, {"col": "GenreId", "col_desc": "Optional foreign key that references the genre of this track."}, {"col": "Composer", "col_desc": "Composer of the track."}, {"col": "Milliseconds", "col_desc": "Duration of the track in milliseconds."}, {"col": "Bytes", "col_desc": "Size of the track file in bytes."}, {"col": "UnitPrice", "col_desc": "Price per unit of this track."}], "table_summary": "이 테이블은 음악 트랙에 대한 상세 정보를 저장하고 있습니다. 트랙 ID, 이름, 앨범 ID, 미디어 유형 ID, 장르 ID, 작곡가, 재생 시간(밀리초), 파일 크기(바이트), 단가 등의 데이터를 포함하고 있습니다. \n\n이 테이블을 활용하여 다음과 같은 분석이 가능합니다:\n\n- 특정 장르나 앨범에 속한 트랙 목록 조회\n- 전체 트랙 라이브러리의 총 재생 시간 계산\n- 앨범별 트랙 수 통계 \n- 장시간 재생되는 인기 트랙 파악\n- 새로운 트랙 추가 시 총 재생 시간 및 라이브러리 크기 변화 모니터링\n- 트랙 단가 정보를 바탕으로 음원 판매 수익 분석\n- 장르별, 앨범별 트랙 특성(재생 시간, 파일 크기 등) 비교 분석\n\n이 테이블은 음악 스트리밍 서비스, 음원 판매 플랫폼, 음악 관련 데이터 분석 등 다양한 분야에서 활용될 수 있습니다. 트랙 정보를 기반으로 사용자 청취 패턴 분석, 인기 트랙/장르 추천, 수익 분석, 라이브러리 관리 등의 업무를 수행할 수 있습니다."}}
+[
+    {
+        "Album": {
+            "table_desc": "Stores album data with unique ID, title, and links to artist via artist ID.",
+            "cols": [
+                {
+                    "col": "AlbumId",
+                    "col_desc": "Primary key, unique identifier for the album."
+                },
+                {
+                    "col": "Title",
+                    "col_desc": "Title of the album."
+                },
+                {
+                    "col": "ArtistId",
+                    "col_desc": "Foreign key that references the artist of the album."
+                }
+            ],
+            "table_summary": "이 테이블은 앨범 데이터를 저장하는 데 사용됩니다. 각 앨범에는 고유 ID, 제목 및 아티스트 ID가 포함되어 있습니다. 아티스트 ID는 아티스트 테이블의 외래 키로, 앨범과 아티스트 간의 관계를 연결합니다.\n\n이 테이블을 활용하면 다음과 같은 작업을 수행할 수 있습니다:\n\n1. 특정 아티스트의 전체 앨범 목록 조회\n2. 아티스트별 앨범 수 및 활동 기간 분석\n3. 인기 앨범 파악 및 추천 시스템 구축\n4. 앨범별 트랙 수 통계 분석\n5. 아티스트 관련 콘텐츠 및 상품 기획을 위한 데이터 활용\n6. 음원 판매 플랫폼이나 스트리밍 서비스의 아티스트 프로필 페이지 구성\n\n이 테이블은 음악 산업, 엔터테인먼트 분야에서 유용하게 활용될 수 있습니다. 예를 들어 음원 판매 플랫폼에서는 이 데이터를 바탕으로 아티스트별 작품 목록을 제공하고, 인기 앨범을 추천할 수 있습니다. 또한 음악 스트리밍 서비스에서는 사용자 취향에 맞는 앨범을 추천하는 데 활용할 수 있습니다. 나아가 음반 제작사나 기획사에서는 아티스트의 활동 기간과 작품량을 분석하여 마케팅 전략을 수립하는 데 참고할 수 있습니다."
+        }
+    },
+    {
+        "Artist": {
+            "table_desc": "Holds artist information with an ID and name.",
+            "cols": [
+                {
+                    "col": "ArtistId",
+                    "col_desc": "Primary key, unique identifier for the artist."
+                },
+                {
+                    "col": "Name",
+                    "col_desc": "Name of the artist."
+                }
+            ],
+            "table_summary": "이 테이블은 아티스트 정보를 저장하고 있습니다. 각 아티스트에 대해 고유 식별자인 ArtistId와 아티스트 이름인 Name 열을 포함하고 있습니다. \n\n이 테이블을 활용하여 다음과 같은 작업을 수행할 수 있습니다:\n\n1. 모든 아티스트 목록 조회 및 관리\n2. 특정 아티스트의 고유 ID 조회\n3. 아티스트 이름으로 검색하여 관련 정보 조회 (예: 앨범, 곡 등)\n4. 아티스트 기반 분석 (예: 인기 아티스트, 활동 기간 분석 등)\n5. 아티스트 관련 콘텐츠 또는 상품 기획 시 기초 데이터로 활용\n6. 음원 스트리밍 서비스나 온라인 음원 판매 플랫폼에서 아티스트 프로필 페이지 구성\n\n이 테이블은 음악 관련 시스템에서 아티스트 정보를 저장하고 관리하는 핵심 역할을 합니다. 아티스트 ID를 통해 다른 테이블(예: 앨범, 곡 등)과 연결되어 더 풍부한 데이터 분석과 활용이 가능해집니다."
+        }
+    },
+    {
+        "Customer": {
+            "table_desc": "Contains customer details and links to their support representative.",
+            "cols": [
+                {
+                    "col": "CustomerId",
+                    "col_desc": "Primary key, unique customer identifier."
+                },
+                {
+                    "col": "FirstName",
+                    "col_desc": "First name of the customer."
+                },
+                {
+                    "col": "LastName",
+                    "col_desc": "Last name of the customer."
+                },
+                {
+                    "col": "Company",
+                    "col_desc": "Company of the customer."
+                },
+                {
+                    "col": "Address",
+                    "col_desc": "Address of the customer."
+                },
+                {
+                    "col": "City",
+                    "col_desc": "City of the customer."
+                },
+                {
+                    "col": "State",
+                    "col_desc": "State of the customer."
+                },
+                {
+                    "col": "Country",
+                    "col_desc": "Country of the customer."
+                },
+                {
+                    "col": "PostalCode",
+                    "col_desc": "Postal code of the customer."
+                },
+                {
+                    "col": "Phone",
+                    "col_desc": "Phone number of the customer."
+                },
+                {
+                    "col": "Fax",
+                    "col_desc": "Fax number of the customer."
+                },
+                {
+                    "col": "Email",
+                    "col_desc": "Email address of the customer."
+                },
+                {
+                    "col": "SupportRepId",
+                    "col_desc": "Foreign key that references the employee who supports this customer."
+                }
+            ],
+            "table_summary": "이 테이블은 고객 정보와 고객 지원 담당자 링크를 포함하고 있습니다. 고객 ID, 이름, 회사명, 주소, 도시, 주/도, 국가, 우편번호, 전화번호, 팩스번호, 이메일 주소 등 고객 개인 및 연락처 정보가 포함되어 있습니다. 또한 고객 지원 담당 직원의 ID도 외래키로 연결되어 있습니다.\n\n이 테이블을 활용하여 다음과 같은 분석이 가능합니다:\n\n- 국가/지역별 고객 데이터 필터링 및 세분화된 마케팅/프로모션 활동\n- 고객 구매 내역 분석을 통한 우수 고객 관리 및 타겟 마케팅 전략 수립  \n- 고객 위치 기반 지역 규정 준수 여부 확인\n- 고객 연락처 정보를 활용한 개인화된 커뮤니케이션 및 고객 서비스 제공\n- 고객 지원 담당자 배정 현황 파악 및 업무 분담 최적화\n\n이 테이블은 고객 관계 관리(CRM), 마케팅, 영업, 고객 서비스 등 다양한 비즈니스 부문에서 활용될 수 있는 핵심 데이터를 제공합니다."
+        }
+    },
+    {
+        "Employee": {
+            "table_desc": "Stores employee details, including their supervisory chain.",
+            "cols": [
+                {
+                    "col": "EmployeeId",
+                    "col_desc": "Primary key, unique identifier for the employee."
+                },
+                {
+                    "col": "LastName",
+                    "col_desc": "Last name of the employee."
+                },
+                {
+                    "col": "FirstName",
+                    "col_desc": "First name of the employee."
+                },
+                {
+                    "col": "Title",
+                    "col_desc": "Job title of the employee."
+                },
+                {
+                    "col": "ReportsTo",
+                    "col_desc": "Foreign key that references the supervisor of the employee."
+                },
+                {
+                    "col": "BirthDate",
+                    "col_desc": "Birth date of the employee."
+                },
+                {
+                    "col": "HireDate",
+                    "col_desc": "Hire date of the employee."
+                },
+                {
+                    "col": "Address",
+                    "col_desc": "Address of the employee."
+                },
+                {
+                    "col": "City",
+                    "col_desc": "City of the employee."
+                },
+                {
+                    "col": "State",
+                    "col_desc": "State of the employee."
+                },
+                {
+                    "col": "Country",
+                    "col_desc": "Country of the employee."
+                },
+                {
+                    "col": "PostalCode",
+                    "col_desc": "Postal code of the employee."
+                },
+                {
+                    "col": "Phone",
+                    "col_desc": "Phone number of the employee."
+                },
+                {
+                    "col": "Fax",
+                    "col_desc": "Fax number of the employee."
+                },
+                {
+                    "col": "Email",
+                    "col_desc": "Email address of the employee."
+                }
+            ],
+            "table_summary": "이 테이블은 직원 정보를 저장하고 있습니다. 직원의 고유 식별자, 이름, 직함, 상사, 생년월일, 입사일, 주소, 전화번호, 팩스번호, 이메일 등의 데이터를 포함하고 있습니다. \n\n이 테이블을 활용하여 다음과 같은 분석이 가능합니다:\n\n- 직원 인력 현황 파악 및 모니터링\n- 부서/직급별 인력 분포 분석\n- 신입/경력 직원 비율 분석 \n- 근속년수 분석\n- 지역/국가별 인력 분포 분석\n- 직원 연령대 분석\n- 직원 이직률 분석\n- 직원 연락처 관리\n- 상사-부하 직원 관계 분석\n- 인사 정책 수립 및 의사결정을 위한 기초 데이터 활용\n\n이 테이블에는 직원의 개인 정보와 조직 내 위치, 연락처 등 다양한 정보가 포함되어 있어 인사 관리, 조직 분석, 의사결정 지원 등 다방면에서 활용될 수 있습니다."
+        }
+    },
+    {
+        "Genre": {
+            "table_desc": "Catalogs music genres with a unique identifier and name.",
+            "cols": [
+                {
+                    "col": "GenreId",
+                    "col_desc": "Primary key, unique identifier for the genre."
+                },
+                {
+                    "col": "Name",
+                    "col_desc": "Name of the genre."
+                }
+            ],
+            "table_summary": "이 테이블은 음악 장르에 대한 정보를 제공합니다. 각 장르는 고유한 식별자(GenreId)와 이름(Name)으로 구분됩니다. \n\n이 테이블을 활용하면 다음과 같은 분석이 가능합니다:\n\n- 특정 장르에 속하는 트랙 목록 조회\n- 장르별 트랙 수 집계\n- 신규 장르 추가 및 기존 장르 정보 수정\n- 다른 테이블(예: 트랙 정보 테이블)과 조인하여 장르별 트랙 통계 분석\n\n예를 들어 특정 장르의 인기도를 파악하거나, 사용자 취향에 맞는 장르의 트랙을 추천하는 데 활용할 수 있습니다. 또한 음원 서비스에서 장르별 트랙 분류 기능을 구현하는 데에도 도움이 될 것입니다."
+        }
+    },
+    {
+        "Invoice": {
+            "table_desc": "Records details of transactions, linked to customers.",
+            "cols": [
+                {
+                    "col": "InvoiceId",
+                    "col_desc": "Primary key, unique identifier for the invoice."
+                },
+                {
+                    "col": "CustomerId",
+                    "col_desc": "Foreign key that references the customer associated with this invoice."
+                },
+                {
+                    "col": "InvoiceDate",
+                    "col_desc": "Date when the invoice was issued."
+                },
+                {
+                    "col": "BillingAddress",
+                    "col_desc": "Billing address on the invoice."
+                },
+                {
+                    "col": "BillingCity",
+                    "col_desc": "Billing city on the invoice."
+                },
+                {
+                    "col": "BillingState",
+                    "col_desc": "Billing state on the invoice."
+                },
+                {
+                    "col": "BillingCountry",
+                    "col_desc": "Billing country on the invoice."
+                },
+                {
+                    "col": "BillingPostalCode",
+                    "col_desc": "Billing postal code on the invoice."
+                },
+                {
+                    "col": "Total",
+                    "col_desc": "Total amount of the invoice."
+                }
+            ],
+            "table_summary": "이 테이블은 송장 정보와 고객 정보를 연결하여 저장하고 있습니다. 주요 컬럼은 다음과 같습니다:\n\n- InvoiceId: 송장의 고유 식별자\n- CustomerId: 해당 송장과 연관된 고객의 고유 식별자\n- InvoiceDate: 송장이 발행된 날짜\n- BillingAddress, BillingCity, BillingState, BillingCountry, BillingPostalCode: 고객의 청구지 주소 정보\n- Total: 해당 송장의 총 금액\n\n이 테이블을 활용하여 다음과 같은 분석이 가능합니다:\n\n- 기간별, 고객별 매출 추이 분석\n- 우수 고객 식별 및 고객 세분화\n- 지역별 매출 현황 파악\n- 고객 구매 패턴 및 행동 분석\n- 마케팅 및 프로모션 전략 수립\n- 재고 관리 및 수요 예측\n- 고객 유지율 및 이탈률 분석\n- 리스크 관리 및 부정 행위 탐지\n\n예를 들어 고객별 총 구매액을 기준으로 상위 고객을 식별하고 이들의 구매 패턴을 파악하여 맞춤형 마케팅 전략을 수립할 수 있습니다. 또한 지역별 매출 현황을 모니터링하여 신규 매장 입지 선정 등의 의사결정에 활용할 수 있습니다."
+        }
+    },
+    {
+        "InvoiceLine": {
+            "table_desc": "Details each line item on an invoice, linked to tracks and invoices.",
+            "cols": [
+                {
+                    "col": "InvoiceLineId",
+                    "col_desc": "Primary key, unique identifier for the invoice line."
+                },
+                {
+                    "col": "InvoiceId",
+                    "col_desc": "Foreign key that references the associated invoice."
+                },
+                {
+                    "col": "TrackId",
+                    "col_desc": "Foreign key that references the track sold in this invoice line."
+                },
+                {
+                    "col": "UnitPrice",
+                    "col_desc": "Price per unit of the track."
+                },
+                {
+                    "col": "Quantity",
+                    "col_desc": "Quantity of the track sold in this invoice line."
+                }
+            ],
+            "table_summary": "이 테이블은 송장의 각 라인 항목에 대한 세부 정보를 포함하고 있으며, 트랙과 송장에 연결되어 있습니다. \n\n주요 열은 다음과 같습니다:\n\n- InvoiceLineId: 송장 라인의 고유 식별자인 기본 키입니다.\n- InvoiceId: 관련 송장을 참조하는 외래 키입니다. \n- TrackId: 이 송장 라인에서 판매된 트랙을 참조하는 외래 키입니다.\n- UnitPrice: 트랙의 단위 가격입니다.\n- Quantity: 이 송장 라인에서 판매된 트랙의 수량입니다.\n\n이 테이블을 통해 다음과 같은 분석이 가능할 것으로 보입니다:\n\n- 특정 송장에 대한 세부 라인 항목 조회\n- 특정 트랙의 판매 내역 분석\n- 송장별 총 판매액 계산\n- 가장 인기 있는 트랙 파악\n- 시간에 따른 트랙 판매 추이 분석\n\n또한 이 테이블은 고객 구매 내역 관리, 재고 관리, 매출 분석 등에 활용될 수 있습니다."
+        }
+    },
+    {
+        "MediaType": {
+            "table_desc": "Defines types of media for tracks.",
+            "cols": [
+                {
+                    "col": "MediaTypeId",
+                    "col_desc": "Primary key, unique identifier for the media type."
+                },
+                {
+                    "col": "Name",
+                    "col_desc": "Name of the media type."
+                }
+            ],
+            "table_summary": "이 테이블은 트랙의 미디어 유형을 정의합니다. 다음과 같은 열을 포함하고 있습니다:\n\n- MediaTypeId: 미디어 유형의 고유 식별자로 기본 키입니다.\n- Name: 미디어 유형의 이름입니다.\n\n이 테이블은 다양한 미디어 유형(예: 오디오, 비디오 등)과 각 유형의 고유 식별자를 저장하는 데 사용될 수 있습니다. 이를 통해 다른 테이블에서 미디어 유형을 참조할 수 있습니다.\n\n이 테이블을 활용하여 다음과 같은 분석이 가능할 것입니다:\n\n- 특정 미디어 유형의 트랙 수 계산\n- 미디어 유형별 트랙 판매량 분석\n- 새로운 미디어 유형 추가 및 기존 유형 관리\n- 미디어 유형 정보를 다른 테이블과 결합하여 추가 분석 수행\n\n전반적으로 이 테이블은 미디어 콘텐츠 관리 시스템에서 핵심적인 역할을 할 것으로 예상됩니다."
+        }
+    },
+    {
+        "Playlist": {
+            "table_desc": "Organizes tracks into playlists.",
+            "cols": [
+                {
+                    "col": "PlaylistId",
+                    "col_desc": "Primary key, unique identifier for the playlist."
+                },
+                {
+                    "col": "Name",
+                    "col_desc": "Name of the playlist."
+                }
+            ],
+            "table_summary": "이 테이블은 트랙을 재생 목록으로 구성하는 데 사용됩니다. 테이블에는 다음과 같은 열이 포함되어 있습니다.\n\nPlaylistId: 재생 목록의 고유 식별자로 기본 키 역할을 합니다.\nName: 재생 목록의 이름을 저장합니다.\n\n이 테이블을 사용하면 다음과 같은 작업을 수행할 수 있습니다.\n\n- 새로운 재생 목록 생성 및 이름 지정\n- 기존 재생 목록 이름 변경\n- 재생 목록 식별을 위한 고유 ID 제공\n- 사용자 또는 앱에 재생 목록 목록 제공\n- 특정 재생 목록에 포함된 트랙 조회 (다른 테이블과 조인 필요)\n- 사용자 또는 앱별 재생 목록 그룹화 (다른 테이블과 조인 필요)\n\n이 테이블만으로는 재생 목록에 포함된 실제 트랙 정보를 알 수 없지만, 다른 트랙 관련 테이블과 조인하면 재생 목록 내 트랙 정보를 얻을 수 있습니다."
+        }
+    },
+    {
+        "PlaylistTrack": {
+            "table_desc": "Links tracks to playlists.",
+            "cols": [
+                {
+                    "col": "PlaylistId",
+                    "col_desc": "Foreign key that identifies the playlist."
+                },
+                {
+                    "col": "TrackId",
+                    "col_desc": "Foreign key that identifies the track on the playlist."
+                }
+            ],
+            "table_summary": "이 테이블은 플레이리스트와 트랙 간의 연결 관계를 나타냅니다. 각 행은 특정 플레이리스트에 포함된 트랙을 나타냅니다. \n\nPlaylistId 열은 플레이리스트를 식별하는 외래 키이며, TrackId 열은 해당 플레이리스트에 포함된 트랙을 식별하는 외래 키입니다.\n\n이 테이블을 사용하면 다음과 같은 분석이 가능합니다:\n\n- 특정 플레이리스트에 포함된 모든 트랙 목록 확인\n- 가장 인기 있는 플레이리스트 파악 (가장 많은 트랙이 포함된 플레이리스트)\n- 특정 트랙이 포함된 모든 플레이리스트 확인\n- 사용자가 만든 플레이리스트 분석 (사용자 ID와 연결된 PlaylistId 사용)\n- 플레이리스트 간 트랙 중복 여부 확인\n\n이 테이블은 음악 스트리밍 서비스, 디지털 음원 판매 플랫폼 등에서 사용자의 플레이리스트 데이터를 관리하고 분석하는 데 유용할 것입니다."
+        }
+    },
+    {
+        "Track": {
+            "table_desc": "Stores detailed information about music tracks, linked to albums, genres, and media types.",
+            "cols": [
+                {
+                    "col": "TrackId",
+                    "col_desc": "Primary key, unique identifier for the track."
+                },
+                {
+                    "col": "Name",
+                    "col_desc": "Name of the track."
+                },
+                {
+                    "col": "AlbumId",
+                    "col_desc": "Foreign key that references the album containing this track."
+                },
+                {
+                    "col": "MediaTypeId",
+                    "col_desc": "Foreign key that references the type of media for this track."
+                },
+                {
+                    "col": "GenreId",
+                    "col_desc": "Optional foreign key that references the genre of this track."
+                },
+                {
+                    "col": "Composer",
+                    "col_desc": "Composer of the track."
+                },
+                {
+                    "col": "Milliseconds",
+                    "col_desc": "Duration of the track in milliseconds."
+                },
+                {
+                    "col": "Bytes",
+                    "col_desc": "Size of the track file in bytes."
+                },
+                {
+                    "col": "UnitPrice",
+                    "col_desc": "Price per unit of this track."
+                }
+            ],
+            "table_summary": "이 테이블은 음악 트랙에 대한 상세 정보를 저장하고 있습니다. 트랙 ID, 이름, 앨범 ID, 미디어 유형 ID, 장르 ID, 작곡가, 재생 시간(밀리초), 파일 크기(바이트), 단가 등의 데이터를 포함하고 있습니다. 이 테이블을 통해 다음과 같은 분석이 가능합니다:\n\n- 특정 장르나 앨범에 속한 트랙 목록 조회\n- 전체 트랙 라이브러리의 총 재생 시간 계산\n- 앨범별 트랙 수 통계 \n- 장시간 재생되는 인기 트랙 파악\n- 새로운 트랙 추가 시 총 재생 시간 및 라이브러리 크기 변화 모니터링\n- 트랙 단가 정보를 활용한 수익 분석 및 가격 정책 수립\n\n이 테이블은 음악 스트리밍 서비스, 음원 판매 플랫폼, 음악 관련 데이터 분석 등 다양한 분야에서 활용될 수 있습니다. 사용자 청취 패턴 분석, 장르/앨범별 인기 트랙 추천, 신규 음원 라이브러리 구축 및 관리, 수익 및 가격 정책 수립 등에 유용한 정보를 제공합니다."
+        }
+    }
+]

@@ -117,31 +117,51 @@ def search_table_queries(queries, table_name):
     return matched_queries
 
 def summarize_table(table_name, table_data, queries, chain):
-    with open(OUTPUT_FILE_PATH1, 'a', encoding='utf-8') as output_file:            
-        table_summary = chain.invoke({"table_schema": table_data, "sample_queries": queries})
-        table_data['table_summary'] = table_summary 
-        summary_output = {table_name: table_data}
-        output_file.write(json.dumps(summary_output, ensure_ascii=False) + "\n")
-
+    table_summary = chain.invoke({"table_schema": table_data, "sample_queries": queries})
+    table_data['table_summary'] = table_summary 
+    summary_output = {table_name: table_data}
+    return summary_output
 
 def embedding_summary(emb_model):
-    num = 0
-    with open(OUTPUT_FILE_PATH1, 'r') as input_file, open(OUTPUT_FILE_PATH2, 'a') as output_file:
-        for line in input_file:
-            data = json.loads(line)
-            table_name = list(data.keys())[0]
-            table_summary = data[table_name]["table_summary"]
-            data[table_name]["table_summary_v"] = emb_model.embed_query(table_summary)
-            
-            # Action part
-            action = { "index": { "_index": INDEX_NAME, "_id": str(num) } }
+    with open(OUTPUT_FILE_PATH1, 'r', encoding='utf-8') as input_file:
+        data_list = json.load(input_file)
 
-            # Write action and body to the file in correct bulk format
-            output_file.write(json.dumps(action, ensure_ascii=False) + "\n")
-            output_file.write(json.dumps(data, ensure_ascii=False) + "\n")
+    for data in data_list:
+        table_name = list(data.keys())[0]
+        table_summary = data[table_name]["table_summary"]
+        data[table_name]["table_summary_v"] = emb_model.embed_query(table_summary)
+    
+    with open(OUTPUT_FILE_PATH2, 'w', encoding='utf-8') as output_file:
+        json.dump(data_list, output_file, ensure_ascii=False, indent=4)
 
-            num += 1    
+def load_detailed_schema_descriptions(os_client):
 
+    with open(OUTPUT_FILE_PATH2, 'r') as file:
+        schema_data = json.load(file)
+
+    bulk_data = []
+    for table in schema_data:
+        for table_name, table_info in table.items():
+            table_doc = {
+                "table_name": table_name,
+                "table_desc": table_info["table_desc"],
+                "columns": [{"col_name": col["col"], "col_desc": col["col_desc"]} for col in table_info["cols"]],
+                "table_summary": table_info["table_summary"],
+                "table_summary_v": table_info["table_summary_v"]
+            }
+            bulk_data.append({"index": {"_index": INDEX_NAME, "_id": table_name}})
+            bulk_data.append(table_doc)
+    
+    bulk_data_str = '\n'.join(json.dumps(item) for item in bulk_data) + '\n'
+
+    response = os_client.bulk(body=bulk_data_str)
+    if response["errors"]:
+        print("There were errors during bulk indexing:")
+        for item in response["items"]:
+            if 'index' in item and item['index']['status'] >= 400:
+                print(f"Error: {item['index']['error']['reason']}")
+    else:
+        print("Bulk-inserted all items successfully.")
 
 def main():
     schema = load_schema(SCHEMA_FILE_PATH)
@@ -152,13 +172,18 @@ def main():
         os.remove(OUTPUT_FILE_PATH1)
 
     for table_info in schema:
+        all_summaries = []
         for table_name, table_data in table_info.items():
             globals()[table_name] = table_data
             matched_queries = search_table_queries(queries, table_name)
             prompt = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
             chain = prompt | chat_model | StrOutputParser()
 
-            summarize_table(table_name, table_data, matched_queries, chain)
+            table_summary = summarize_table(table_name, table_data, matched_queries, chain)
+            all_summaries.append(table_summary)
+    
+    with open(OUTPUT_FILE_PATH1, 'w', encoding='utf-8') as output_file:
+        json.dump(all_summaries, output_file, ensure_ascii=False, indent=4)
 
     if os.path.exists(OUTPUT_FILE_PATH2):
         os.remove(OUTPUT_FILE_PATH2)
@@ -169,17 +194,7 @@ def main():
     config = load_opensearch_config()
     os_client = init_opensearch(config)
 
-    with open(OUTPUT_FILE_PATH2, 'r') as file:
-        bulk_data = file.read()
-
-    response = os_client.bulk(body=bulk_data)
-    if response["errors"]:
-        print("There were errors during bulk indexing:")
-        for item in response["items"]:
-            if 'index' in item and item['index']['status'] >= 400:
-                print(f"Error: {item['index']['error']['reason']}")
-    else:
-        print("Bulk-inserted all items successfully.")
+    load_detailed_schema_descriptions(os_client)
 
 if __name__ == "__main__":
     main()
