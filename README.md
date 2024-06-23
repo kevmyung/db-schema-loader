@@ -5,8 +5,10 @@
 2. [Init Database](https://github.com/kevmyung/db-schema-loader/tree/main?tab=readme-ov-file#init-database)
    - 데이터베이스 스키마 정의를 활용해, 테스트 용 MySQL 데이터베이스 스키마를 초기 구성하고, 샘플 데이터를 적재합니다.
 3. [Query Translator](https://github.com/kevmyung/db-schema-loader/tree/main?tab=readme-ov-file#query-translator)
-   - 예제 SQL 쿼리를 자연어로 번역하고, 이를 벡터 임베딩으로 변환하여 OpenSearch에 인덱싱합니다싱
-
+   - 예제 SQL 쿼리를 자연어로 번역하고, 이를 벡터 임베딩으로 변환하여 OpenSearch에 인덱싱합니다.
+4. [Table Summarizer](https://github.com/kevmyung/db-schema-loader/tree/main?tab=readme-ov-file#table-summarizer)
+   - 샘플 쿼리 및 테이블 기본 설명을 활용해서 각 테이블의 활용 방법에 대한 요약 설명을 증강하고, 이를 벡터 임베딩으로 변환하여 OpenSearch에 인덱싱합니다.
+   
 
 # Schema Loader
 `schema_loader.py` 스크립트는 사전에 정의된 JSON 파일(`table_info.json`)로부터 데이터베이스 스키마 정의를 생성합니다. 이 스크립트는 데이터베이스에 테이블을 생성하기 위한 SQL 데이터 정의 언어(DDL) 문장을 출력하며, 자세한 스키마 설명을 JSON 형식으로 출력합니다.
