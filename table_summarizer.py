@@ -11,11 +11,11 @@ from langchain_core.prompts.chat import ChatPromptTemplate
 REGION_NAME = "us-east-1"
 INDEX_NAME = "schema_descriptions"
 
-SCHEMA_FILE_PATH = "./metadata/default_schema.json"
-SAMPLE_QUERY_FILE_PATH = "./metadata/example_queries_temp.json"
+SCHEMA_FILE_PATH = "./metadata/spider_schemas.json"
+SAMPLE_QUERY_FILE_PATH = "./metadata/spider_example_queries_temp.json"
 
-OUTPUT_FILE_PATH1 = "./metadata/detailed_schema_temp.json"
-OUTPUT_FILE_PATH2 = "./metadata/detailed_schema.json"
+OUTPUT_FILE_PATH1 = "./metadata/spider_detailed_schema_temp.json"
+OUTPUT_FILE_PATH2 = "./metadata/spider_detailed_schema.json"
 
 SYS_PROMPT = """
 You are a data analyst that can help summarize SQL tables.
@@ -168,11 +168,14 @@ def main():
     queries = load_queries(SAMPLE_QUERY_FILE_PATH)
     chat_model, emb_model = init_model()
 
+    # Initialize the output file as a JSON array
     if os.path.exists(OUTPUT_FILE_PATH1):
         os.remove(OUTPUT_FILE_PATH1)
+    
+    with open(OUTPUT_FILE_PATH1, 'w', encoding='utf-8') as output_file:
+        output_file.write('[\n')
 
     for table_info in schema:
-        all_summaries = []
         for table_name, table_data in table_info.items():
             globals()[table_name] = table_data
             matched_queries = search_table_queries(queries, table_name)
@@ -180,10 +183,14 @@ def main():
             chain = prompt | chat_model | StrOutputParser()
 
             table_summary = summarize_table(table_name, table_data, matched_queries, chain)
-            all_summaries.append(table_summary)
-    
-    with open(OUTPUT_FILE_PATH1, 'w', encoding='utf-8') as output_file:
-        json.dump(all_summaries, output_file, ensure_ascii=False, indent=4)
+            
+            with open(OUTPUT_FILE_PATH1, 'a', encoding='utf-8') as output_file:
+                output_file.write(json.dumps(table_summary, ensure_ascii=False, indent=4) + ',\n')
+
+    with open(OUTPUT_FILE_PATH1, 'rb+') as output_file:
+        output_file.seek(-2, os.SEEK_END) 
+        output_file.truncate() 
+        output_file.write(b'\n]')
 
     if os.path.exists(OUTPUT_FILE_PATH2):
         os.remove(OUTPUT_FILE_PATH2)

@@ -9,16 +9,18 @@ from langchain_core.prompts.chat import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 
-PROMPT_TEMPLATE1 = """ 
+output_language = "Korean"
+
+SYS_PROMPT_TEMPLATE1 = """ 
 You are an expert in extracting table names and column names from SQL queries. 
 From the provided SQL query, extract all table names and column names used for SELECT, WHERE, and JOIN clauses, excluding asterisks ("*"). 
 Ensure that the response is in a valid JSON format that can be used directly with json.load(). 
 Skip the preamble and only provide the answer in a JSON document:
 
-{{
+{
   "table": ["table1", "table2", ...],
   "column": ["col1", "col2", ...]
-}}
+}
 
 <example>
 SQL:
@@ -26,64 +28,66 @@ SELECT * from LOGIS_ADMIN.IAWD_TB_DCBSCD_BASISLC_M
 where basis_lclsf_cd_nm like '%예약구분%'
 LIMIT 200;
 
-{{
+{
   "table": ["IAWD_TB_DCBSCD_BASISLC_M"],
   "column": ["basis_lclsf_cd_nm"]
-}}
+}
 </example>
-
-SQL: {sql}
 """
 
 
-PROMPT_TEMPLATE2 = """ 
+SYS_PROMPT_TEMPLATE2 = """ 
 You are an SQL expert who can understand the intent behind a given SQL query. 
-Translate the SQL query into a natural language request that a real user might make. 
-Keep your translation concise and conversational, mimicking how an actual user would ask for the information sought by the query. 
-Do not reference the <description> section directly and do not use a question form. 
-Ensure to include all conditions specified in the SQL query in the request.
-Write possible business and functional purposes of the query.
-Write very detailed purposes and motives of the query in detail.
+Translate the SQL query into a natural language request in {output_language} that a real user might make. 
 
-Skip the preamble and phrase only the natural language request in Korean using a concise and straightforward tone without a verb ending. 
+- Keep your translation concise and conversational, mimicking how an actual user would ask for the information sought by the query. 
+- Do not reference the <description> section directly and do not use a question form. 
+- Ensure to include all conditions specified in the SQL query in the request.
+- Write possible business and functional purposes of the query.
+- Write very detailed purposes and motives of the query in detail.
+- Skip the preamble and phrase only the natural language request using a concise and straightforward tone without a verb ending. 
 
+<example>
+SQL: SELECT count(*)\nfrom IAWB_TB_DCTRTR_TR_M\nwhere work_dt = '20240522'
+Query to retrieve the count of products processed on May 22, 2024.
+</example>
+""".format(output_language=output_language)
+
+USR_PROMPT_TEMPLATE1="""
+SQL: {sql}
+"""
+
+USR_PROMPT_TEMPLATE2="""
 <description>
 {description}
 </description>
 
-<example>
-SQL: SELECT count(*)\nfrom IAWB_TB_DCTRTR_TR_M\nwhere work_dt = '20240522'
-
-2024년 5월 22일에 처리된 상품 건수 조회
-</example>
 SQL: {sql}
 """
+
 
 INDEX_NAME = "example_queries"
 REGION_NAME = "us-east-1"
 
-SCHEMA_FILE = "./metadata/default_schema.json"
-SQL_FILE = "./metadata/test.txt"
-FILE_PATH_1 = "./metadata/example_queries_temp.json"
-FILE_PATH_2 = "./metadata/example_queries.json"
+SCHEMA_FILE = "./metadata/spider_schemas.json"
+SQL_FILE = "./metadata/spider.sql"
+FILE_PATH_1 = "./metadata/spider_example_queries_temp.json"
+FILE_PATH_2 = "./metadata/spider_example_queries.json"
 
+model_kwargs =  { 
+    "max_tokens": 100000,
+    "temperature": 0.0,
+    "top_k": 250,
+    "top_p": 1
+}
 
-def init_model():
-    model_kwargs =  { 
-        "max_tokens": 100000,
-        "temperature": 0.0,
-        "top_k": 250,
-        "top_p": 1
-    }
+model_kwargs["system"] = SYS_PROMPT_TEMPLATE1
+model1 = ChatBedrock(model_id="anthropic.claude-3-sonnet-20240229-v1:0", region_name=REGION_NAME, model_kwargs=model_kwargs)
 
-    chat_model = ChatBedrock(
-        model_id="anthropic.claude-3-sonnet-20240229-v1:0",
-        region_name=REGION_NAME,
-        model_kwargs=model_kwargs
-    )
+model_kwargs["system"] = SYS_PROMPT_TEMPLATE2
+model2 = ChatBedrock(model_id="anthropic.claude-3-sonnet-20240229-v1:0", region_name=REGION_NAME, model_kwargs=model_kwargs)
 
-    emb_model = BedrockEmbeddings(model_id="amazon.titan-embed-text-v2:0", region_name=REGION_NAME, model_kwargs={"dimensions":1024}) 
-    return chat_model, emb_model
+emb_model = BedrockEmbeddings(model_id="amazon.titan-embed-text-v2:0", region_name=REGION_NAME, model_kwargs={"dimensions":1024}) 
 
 def load_opensearch_config():
     with open("./metadata/opensearch.yml", 'r', encoding='utf-8') as file:
@@ -115,56 +119,28 @@ def init_opensearch(config):
     )
 
     create_os_index(os_client, mapping)
-
     return os_client
 
-def search_with_question(os_client, emb_model):
-    # transform the question to vector embeddings
-    search_vector = emb_model.embed_query("블루스 장르의 인기 트렌드를 알려줘")
-    search_body = {
-        "size": 5,
-        "query": {
-            "knn": {
-                "input_v": {
-                    "vector": search_vector,
-                    "k": 10
-                }
-            }
-        }
-    }
-
-    # vector search
-    response = os_client.search(
-        index=INDEX_NAME,
-        body=search_body
-    )
-    
-    if response['hits']['hits']:
-        for hit in response['hits']['hits']:
-            print(f"Input: {hit['_source']['input']}")
-            print(f"Query: {hit['_source']['query']}\n")
-    else:
-        print(f"Failed to perform knn search: {response}")
-
-    return response['hits']['hits']
-
 def extract_descriptions(table_info, tables, columns):
+    tables_lower = {table.lower() for table in tables}
+    columns_lower = {column.lower() for column in columns}
+    
     description = {
         "table": {},
         "column": {}
     }
+    
     for table_schema in table_info:
         for table_name, table_info in table_schema.items():
-            if table_name in tables:
+            if table_name.lower() in tables_lower:
                 description["table"][table_name] = table_info["table_desc"]
                 for col in table_info["cols"]:
                     col_name = col["col"]
-                    if col_name in columns:
+                    if col_name.lower() in columns_lower:
                         description["column"][col_name] = col["col_desc"]
     return description
 
 def query_translation(table_info, queries, chain1, chain2):
-
     if os.path.exists(FILE_PATH_1):
         os.remove(FILE_PATH_1)
 
@@ -209,28 +185,24 @@ def input_embedding(emb_model):
 
             num += 1    
 
-def main():
-    # initialize the model
-    chat_model, emb_model = init_model()
+def main():   
+    # load the schema description
+    with open(SCHEMA_FILE, 'r') as file:
+        table_info = json.load(file)
 
-    # # load the schema description
-    # with open(SCHEMA_FILE, 'r') as file:
-    #     table_info = json.load(file)
+    # load the example SQLs
+    with open(SQL_FILE, 'r') as file:
+        data = file.read()
+    queries = [query.strip() for query in data.split(';') if query.strip()]
 
-    # # load the example SQLs
-    # with open(SQL_FILE, 'r') as file:
-    #     data = file.read()
-    # queries = [query.strip() for query in data.split(';') if query.strip()]
+    prompt1 = ChatPromptTemplate.from_template(USR_PROMPT_TEMPLATE1)
+    chain1 = prompt1 | model1 | StrOutputParser()
 
-    # prompt1 = ChatPromptTemplate.from_template(PROMPT_TEMPLATE1)
-    # chain1 = prompt1 | chat_model | StrOutputParser()
+    prompt2 = ChatPromptTemplate.from_template(USR_PROMPT_TEMPLATE2)
+    chain2 = prompt2 | model2 | StrOutputParser()
 
-    # # create LLM chain
-    # prompt2 = ChatPromptTemplate.from_template(PROMPT_TEMPLATE2)
-    # chain2 = prompt2 | chat_model | StrOutputParser()
-
-    # query_translation(table_info, queries, chain1, chain2)
-    # input_embedding(emb_model)
+    query_translation(table_info, queries, chain1, chain2)
+    input_embedding(emb_model)
 
     # initialize opensearch index (cluster should be pre-created)
     config = load_opensearch_config()
@@ -249,9 +221,8 @@ def main():
     else:
         print("Bulk-inserted all items successfully.")
     
-    # hit = search_with_question(os_client, emb_model)
-    # print(f"Input: {hit['_source']['input']}")
-    # print(f"Query: {hit['_source']['query']}\n")
-
 if __name__ == "__main__":
     main()
+
+
+
